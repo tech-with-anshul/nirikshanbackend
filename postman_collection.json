@@ -1,0 +1,632 @@
+{
+  "info": {
+    "name": "Nirikshan Dormitory Management API",
+    "description": "Complete API collection for the Nirikshan Dormitory Management System with OTP authentication, messaging, and enhanced request management",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/send-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "send-otp"]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP & Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-otp"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiverId\": \"user-id-here\",\n  \"subject\": \"Dormitory Issue\",\n  \"content\": \"I wanted to discuss about the room heating issue.\",\n  \"type\": \"PARENT_WARDEN\",\n  \"priority\": \"NORMAL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages"]
+            }
+          }
+        },
+        {
+          "name": "Reply to Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiverId\": \"user-id-here\",\n  \"subject\": \"Re: Dormitory Issue\",\n  \"content\": \"Thank you for bringing this to my attention. I'll look into it.\",\n  \"type\": \"WARDEN_PARENT\",\n  \"priority\": \"NORMAL\",\n  \"threadId\": \"thread-id-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages"]
+            }
+          }
+        },
+        {
+          "name": "Get Message Threads",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/messages/threads",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "threads"]
+            }
+          }
+        },
+        {
+          "name": "Get Thread Messages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/messages/threads/{{threadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "threads", "{{threadId}}"]
+            }
+          }
+        },
+        {
+          "name": "Mark Message as Read",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/messages/{{messageId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "{{messageId}}", "read"]
+            }
+          }
+        },
+        {
+          "name": "Get Authorized Contacts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/messages/contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "contacts"]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/messages/unread-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "unread-count"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student APIs",
+      "item": [
+        {
+          "name": "Get Student Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/student/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["student", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/student/requests?includeHistory=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["student", "requests"],
+              "query": [
+                {
+                  "key": "includeHistory",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"LATE\",\n  \"reason\": \"Family emergency\",\n  \"expectedBack\": \"2024-01-15T22:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/student/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["student", "requests"]
+            }
+          }
+        },
+        {
+          "name": "Create Go Home Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"GO_HOME\",\n  \"reason\": \"Family function\",\n  \"expectedBack\": \"2024-01-20T18:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/student/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["student", "requests"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parent APIs",
+      "item": [
+        {
+          "name": "Get Parent Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/parent/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Child Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/parent/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "requests"]
+            }
+          }
+        },
+        {
+          "name": "Approve Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/parent/requests/{{requestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "requests", "{{requestId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Reject Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/parent/requests/{{requestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["parent", "requests", "{{requestId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Warden APIs",
+      "item": [
+        {
+          "name": "Get Warden Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/warden/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/warden/requests/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "requests", "active"]
+            }
+          }
+        },
+        {
+          "name": "Get Past Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/warden/requests/past",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "requests", "past"]
+            }
+          }
+        },
+        {
+          "name": "Approve Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warden/requests/{{requestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "requests", "{{requestId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newstudent@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+1234567890\",\n  \"studentId\": \"STU2024001\",\n  \"roomNumber\": \"101\",\n  \"floorNumber\": \"1\",\n  \"building\": \"A\",\n  \"emergencyContact\": \"+1987654321\",\n  \"parentEmail\": \"parent@example.com\",\n  \"parentFirstName\": \"Jane\",\n  \"parentLastName\": \"Doe\",\n  \"parentPhone\": \"+1876543210\",\n  \"parentRelationship\": \"Mother\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warden/create-student",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "create-student"]
+            }
+          }
+        },
+        {
+          "name": "Create Parent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newparent@example.com\",\n  \"firstName\": \"Robert\",\n  \"lastName\": \"Smith\",\n  \"phone\": \"+1555666777\",\n  \"parentAddress\": \"123 Main St, City\",\n  \"parentRelationship\": \"Father\",\n  \"parentEmergencyContact\": \"+1555666888\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warden/create-parent",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "create-parent"]
+            }
+          }
+        },
+        {
+          "name": "Link Student and Parent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentEmail\": \"student@example.com\",\n  \"parentEmail\": \"parent@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/warden/link-student-parent",
+              "host": ["{{baseUrl}}"],
+              "path": ["warden", "link-student-parent"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chief Warden APIs",
+      "item": [
+        {
+          "name": "Get Chief Warden Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/chiefWarden/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["chiefWarden", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get All Active Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/chiefWarden/requests/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["chiefWarden", "requests", "active"]
+            }
+          }
+        },
+        {
+          "name": "Get All Past Requests",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/chiefWarden/requests/past",
+              "host": ["{{baseUrl}}"],
+              "path": ["chiefWarden", "requests", "past"]
+            }
+          }
+        },
+        {
+          "name": "Approve Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chiefWarden/requests/{{requestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["chiefWarden", "requests", "{{requestId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Create Warden",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"warden@example.com\",\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Johnson\",\n  \"phone\": \"+1444555666\",\n  \"assignedBuilding\": \"A\",\n  \"wardNumber\": \"W001\",\n  \"responsibilities\": \"Building A supervision\",\n  \"shiftHours\": \"6 AM - 6 PM\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chiefWarden/create-warden",
+              "host": ["{{baseUrl}}"],
+              "path": ["chiefWarden", "create-warden"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Buildings APIs",
+      "item": [
+        {
+          "name": "Get All Buildings Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/buildings/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["buildings", "summary"]
+            }
+          }
+        },
+        {
+          "name": "Get Building Details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/buildings/{{building}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["buildings", "{{building}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Building Students",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/buildings/{{building}}/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["buildings", "{{building}}", "students"]
+            }
+          }
+        },
+        {
+          "name": "Get Building Rooms",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/buildings/{{building}}/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["buildings", "{{building}}", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Assign Warden to Building",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"warden-user-id\",\n  \"building\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/buildings/assign-warden",
+              "host": ["{{baseUrl}}"],
+              "path": ["buildings", "assign-warden"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script for collection-level setup",
+          "console.log('Making request to:', pm.request.url.toString());"
+        ]
+      }
+    }
+  ]
+}

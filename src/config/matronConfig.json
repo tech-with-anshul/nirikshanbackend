@@ -1,0 +1,15 @@
+{
+  "matrons": [
+    {
+    "email": "bhatiarenu75@gmail.com",
+    "firstName": "Renu",
+    "lastName": "Bhatia",
+    "phone": "9810899359",
+    "employeeId": "MAT001",
+    "department": "Student Welfare and Dormitory Services",
+    "responsibilities": "Overall supervision of all hostels/buildings, student welfare, and coordination with wardens",
+    "shiftStartTime": "09:00",
+    "shiftEndTime": "20:00"
+  }
+]
+}

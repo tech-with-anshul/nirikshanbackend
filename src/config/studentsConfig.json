@@ -1,0 +1,70 @@
+{
+  "students": [
+    {
+      "email": "kanshulmussoorie@gmail.com",
+      "firstName": "Anshul",
+      "lastName": "Nirikshan",
+      "phone": "9410147660",
+      "studentId": "22BTCSE0200",
+      "username": "2203027061",
+      "building": "Kasturba Hall",
+      "roomNumber": "109",
+      "floorNumber": "1",
+      "emergencyContact": "9690772236",
+      "medicalInfo": "N/A",
+      "parents": [
+        {
+          "email": "father@gmail.com",
+          "firstName": "Vindo",
+          "lastName": "Kumar",
+          "phone": "9690772236",
+          "relationship": "Father",
+          "address": "Mussoorie Internation School, Mussoorie",
+          "emergencyContact": "N/A"
+        },
+        {
+          "email": "mother@random.com",
+          "firstName": "Guddi",
+          "lastName": "Verma",
+          "phone": "9411761639",
+          "relationship": "Mother",
+          "address": "Mussoorie Internatioal School",
+          "emergencyContact": "N/A"
+        }
+      ]
+    },
+    {
+      "email": "student@random.com",
+      "firstName": "Ishika",
+      "lastName": "Saxena",
+      "phone": "6397916822",
+      "studentId": "JCBUST_Girls_Hostel_568",
+      "username": "22001003047",
+      "building": "A. Lalitha Girl's Hostel",
+      "roomNumber": "810",
+      "floorNumber": "8",
+      "emergencyContact": "N/A",
+      "medicalInfo": "N/A",
+      "parents": [
+        {
+          "email": "father+JCBUST_Girls_Hostel_568@random.com",
+          "firstName": "Saxena",
+          "lastName": "Uncel",
+          "phone": "1234567890",
+          "relationship": "Father",
+          "address": "N/A",
+          "emergencyContact": "N/A"
+        },
+        {
+          "email": "mother+JCBUST_Girls_Hostel_568@random.com",
+          "firstName": "Saxena",
+          "lastName": "aunty",
+          "phone": "9876543210",
+          "relationship": "Mother",
+          "address": "N/A",
+          "emergencyContact": "N/A"
+        }
+      ]
+    }
+  ]
+}

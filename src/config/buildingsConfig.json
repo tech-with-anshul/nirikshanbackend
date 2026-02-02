@@ -1,0 +1,64 @@
+{
+  "buildings": [
+    {
+      "name": "A. Lalitha Girl's Hostel",
+      "displayName": "A. Lalitha Girl's Hostel",
+      "totalCapacity": 100,
+      "currentOccupancy": 0,
+      "floors": 5,
+      "roomsPerFloor": 20,
+      "studentsPerRoom": 2,
+      "description": "Main dormitory building with modern amenities",
+      "facilities": ["WiFi", "Common Room", "Laundry", "Study Hall"],
+      "wardenOffice": "A-Ground-01"
+    },
+    {
+      "name": "Kalpana Chawla Hall",
+      "displayName": "Kalpana Chawla Hall",
+      "totalCapacity": 80,
+      "currentOccupancy": 0,
+      "floors": 4,
+      "roomsPerFloor": 20,
+      "studentsPerRoom": 2,
+      "description": "Secondary dormitory with garden view",
+      "facilities": ["WiFi", "Common Room", "Laundry"],
+      "wardenOffice": "B-Ground-01"
+    },
+    {
+      "name": "Sarojini Hall",
+      "displayName": "Sarojini Hall",
+      "totalCapacity": 60,
+      "currentOccupancy": 0,
+      "floors": 3,
+      "roomsPerFloor": 20,
+      "studentsPerRoom": 2,
+      "description": "Compact dormitory near campus entrance",
+      "facilities": ["WiFi", "Common Room"],
+      "wardenOffice": "C-Ground-01"
+    },
+    {
+      "name": "Kasturba Hall",
+      "displayName": "Kasturba Hall",
+      "totalCapacity": 80,
+      "currentOccupancy": 0,
+      "floors": 4,
+      "roomsPerFloor": 20,
+      "studentsPerRoom": 2,
+      "description": "Modern building with enhanced security",
+      "facilities": ["WiFi", "Common Room", "Laundry", "Gym"],
+      "wardenOffice": "D-Ground-01"
+    },
+    {
+      "name": "Mother Teresa Hall",
+      "displayName": "Mother Teresa Hall",
+      "totalCapacity": 120,
+      "currentOccupancy": 0,
+      "floors": 6,
+      "roomsPerFloor": 20,
+      "studentsPerRoom": 2,
+      "description": "Largest dormitory with premium facilities",
+      "facilities": ["WiFi", "Common Room", "Laundry", "Study Hall", "Gym", "Cafeteria"],
+      "wardenOffice": "E-Ground-01"
+    } 
+  ]
+}

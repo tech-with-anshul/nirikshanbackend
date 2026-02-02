@@ -1,0 +1,358 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  PARENT
+  WARDEN
+  CHIEF_WARDEN
+  MATRON
+}
+
+model Building {
+  id            String   @id @default(cuid())
+  name          String   @unique // Building identifier (e.g., "Himalaya", "Ganga")
+  displayName   String   // Full display name (e.g., "Himalaya Boys Hostel")
+  totalCapacity Int      // Maximum students
+  currentOccupancy Int   @default(0) // Current number of students
+  floors        Int      // Number of floors
+  roomsPerFloor Int      // Rooms per floor
+  studentsPerRoom Int    // Capacity per room
+  description   String?  // Building description
+  facilities    String?  // JSON array of facilities
+  wardenOffice  String?  // Warden office location
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("buildings")
+}
+
+enum MessageType {
+  STUDENT_PARENT
+  PARENT_STUDENT
+  PARENT_WARDEN
+  WARDEN_STUDENT
+  WARDEN_PARENT
+  CHIEF_WARDEN_WARDEN
+  CHIEF_WARDEN_STUDENT
+  CHIEF_WARDEN_PARENT
+  STUDENT_WARDEN
+}
+
+enum MessagePriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  RETRYING
+}
+
+enum EmailType {
+  MESSAGE_NOTIFICATION
+  REQUEST_STATUS_UPDATE
+  WELCOME
+  OTP_VERIFICATION
+  SYSTEM_ALERT
+}
+
+enum RequestType {
+  LATE
+  GO_HOME
+  ARRIVAL_CONFIRMATION
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String?  @unique
+  password  String?  // Hashed password for authentication (temporary nullable)
+  role      UserRole
+  firstName String
+  lastName  String
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // OTP Authentication fields
+  otp           String?   // Current OTP
+  otpExpiresAt  DateTime? // OTP expiration time
+  isVerified    Boolean   @default(false) // Email verification status
+  lastLoginAt   DateTime? // Track last login
+
+  // Student specific fields
+  studentProfile StudentProfile?
+
+  // Parent specific fields
+  parentProfile ParentProfile?
+
+  // Warden specific fields
+  wardenProfile WardenProfile?
+
+  // Chief Warden specific fields
+  chiefWardenProfile ChiefWardenProfile?
+
+  // Matron specific fields
+  matronProfile MatronProfile?
+
+  // Messages sent by this user
+  sentMessages Message[] @relation("SenderMessages")
+  
+  // Messages received by this user
+  receivedMessages Message[] @relation("ReceiverMessages")
+
+  // Requests where this user is the student
+  studentRequests Request[] @relation("StudentRequests")
+
+  // Requests where this user is the parent
+  parentRequests Request[] @relation("ParentRequests")
+
+  @@map("users")
+}
+
+model StudentProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  studentId     String   @unique
+  username      String?  @unique // Roll number used as unique username for login (temporary nullable)
+  roomNumber    String?
+  floorNumber   String?
+  building      String?
+  checkInDate   DateTime?
+  checkOutDate  DateTime?
+  emergencyContact String?
+  medicalInfo   String?
+  isAtHostel    Boolean  @default(true) // Track if student is currently at hostel
+  profilePicture String? @default("https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Room relation
+  roomId        String?
+  room          Room?    @relation(fields: [roomId], references: [id])
+
+  // Parent relations - both mother and father
+  motherProfileId String?
+  motherProfile   ParentProfile? @relation("MotherChildren", fields: [motherProfileId], references: [id])
+
+  fatherProfileId String?
+  fatherProfile   ParentProfile? @relation("FatherChildren", fields: [fatherProfileId], references: [id])
+
+  @@map("student_profiles")
+}
+
+model ParentProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  address       String?
+  emergencyContact String?
+  relationship  String?  // "Mother" or "Father"
+  profilePicture String? @default("https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Parent can have multiple children (students)
+  // Separate relations for mother and father
+  childrenAsMother StudentProfile[] @relation("MotherChildren")
+  childrenAsFather StudentProfile[] @relation("FatherChildren")
+
+  @@map("parent_profiles")
+}
+
+model WardenProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  assignedBuilding String?
+  wardNumber    String?
+  responsibilities String?
+  shiftHours    String?
+  profilePicture String? @default("https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("warden_profiles")
+}
+
+model ChiefWardenProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  department    String?
+  responsibilities String?
+  adminLevel    String?
+  profilePicture String? @default("https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chief_warden_profiles")
+}
+
+model MatronProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  employeeId    String   @unique // Matron employee ID
+  department    String?  // Department name
+  responsibilities String? // Matron responsibilities
+  shiftStartTime String?  // e.g., "09:00" for 9 AM shift start
+  shiftEndTime   String?  // e.g., "17:00" for 5 PM shift end
+  isActive      Boolean  @default(true)
+  profilePicture String? @default("https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("matron_profiles")
+}
+
+model MessageThread {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  lastMessageAt DateTime    @default(now())
+  participantIds String[]   // Array of user IDs for easy querying (always 2 for 1:1 chat)
+  messages      Message[]
+
+  @@map("message_threads")
+}
+
+model Message {
+  id        String          @id @default(cuid())
+  content   String
+  senderId  String
+  receiverId String
+  threadId  String          // Required for chat
+  isRead    Boolean         @default(false)
+  readAt    DateTime?       // When message was read
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  sender    User            @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver  User            @relation("ReceiverMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  thread    MessageThread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  roomNumber  String   @unique
+  floorNumber String
+  building    String
+  capacity    Int
+  isOccupied  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Room can have multiple students
+  students    StudentProfile[]
+
+  @@map("rooms")
+}
+
+model Request {
+  id            String        @id @default(cuid())
+  type          RequestType
+  status        RequestStatus @default(PENDING)     // Warden's final decision
+  reason        String?
+  requestedAt   DateTime      @default(now())
+  expectedBack  DateTime?
+  studentId     String
+  parentId      String?
+  approvedAt    DateTime?     // When warden approved/rejected
+  approvedBy    String?       // Warden who made final decision
+
+  // Verification data
+  verificationPhotoUrl String?   // URL to the stored verification photo
+  locationLatitude     Float?    // GPS latitude
+  locationLongitude    Float?    // GPS longitude
+  locationAccuracy     Float?    // GPS accuracy in meters
+  locationAddress      String?   // Reverse geocoded address
+  locationTimestamp    DateTime? // When location was captured
+
+  // Parent approval fields
+  parentStatus      RequestStatus @default(PENDING)  // Parent's decision
+  parentApprovedAt  DateTime?                        // When parent approved/rejected
+
+  // Parent location verification (captured when parent approves)
+  parentLocationLatitude   Float?    // Parent's GPS latitude when approving
+  parentLocationLongitude  Float?    // Parent's GPS longitude when approving
+  parentLocationAccuracy   Float?    // Parent's GPS accuracy in meters
+  parentLocationAddress    String?   // Parent's reverse geocoded address
+  parentLocationTimestamp  DateTime? // When parent's location was captured
+
+  // Scale up fields for requests beyond 8 PM
+  isScaledUp        Boolean     @default(false)      // Whether request was scaled up to chief warden
+  scaledUpAt        DateTime?                        // When request was scaled up
+  scaledUpBy        String?                          // Warden who scaled up the request
+  chiefWardenStatus RequestStatus?                   // Chief warden's decision on scaled up request
+  chiefWardenApprovedAt DateTime?                    // When chief warden made decision
+  chiefWardenApprovedBy String?                      // Chief warden who made decision
+  chiefWardenMessage    String?                      // Chief warden's message/reason for approval/rejection
+
+  // Arrival Confirmation fields (for ARRIVAL_CONFIRMATION type)
+  confirmedByWarden        Boolean   @default(false)  // Warden confirmed arrival
+  confirmedByWardenAt      DateTime?                  // When warden confirmed
+  confirmedByWardenId      String?                    // Warden who confirmed
+  confirmedByChiefWarden   Boolean   @default(false)  // Chief warden confirmed arrival
+  confirmedByChiefWardenAt DateTime?                  // When chief warden confirmed
+  confirmedByChiefWardenId String?                    // Chief warden who confirmed
+
+  student       User          @relation("StudentRequests", fields: [studentId], references: [id], onDelete: Cascade)
+  parent        User?         @relation("ParentRequests", fields: [parentId], references: [id])
+
+  @@map("requests")
+}
+
+model EmailNotification {
+  id          String      @id @default(cuid())
+  to          String      // Recipient email
+  subject     String
+  content     String      // HTML or plain text content
+  type        EmailType
+  status      EmailStatus @default(PENDING)
+  sentAt      DateTime?   // When email was successfully sent
+  failureReason String?   // Error message if failed
+  retryCount  Int         @default(0)
+  maxRetries  Int         @default(3)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Optional reference to related entities
+  relatedMessageId String?
+  relatedRequestId String?
+  relatedUserId    String?
+
+  @@map("email_notifications")
+}

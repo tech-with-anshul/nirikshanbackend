@@ -1,0 +1,13 @@
+{
+  "chiefWardens": [
+    {
+      "email": "dinesh@nirikshanai.com",
+      "firstName": "Dinesh",
+      "lastName": "Yadav",
+      "phone": "9958138139",
+      "department": "Dormitory Administration",
+      "responsibilities": "Overall dormitory management and warden supervision",
+      "adminLevel": "Super Admin"
+    }
+  ]
+}
